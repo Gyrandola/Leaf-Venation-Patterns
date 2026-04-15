@@ -1,5 +1,10 @@
+mod leaf;
+use leaf::Leaf;
+
 use macroquad::prelude::*;
 use macroquad::rand::srand;
+
+static LEAF_SCALE: f32 = 1000.0;
 
 static VEIN_RADIUS: f32 = 4.0;
 static VEIN_INNER_COLOR: Color = WHITE;
@@ -8,17 +13,17 @@ static VEIN_GROWTH_RATE: f32 = 8.5;
 
 static AUXIN_RADIUS: f32 = 4.0;
 static AUXIN_COLOR: Color = RED;
-static AUXIN_STARTING_NUMBER: i32 = 800;
+static AUXIN_STARTING_NUMBER: i32 = 1000;
 
 /// Number of auxins to generate when pressing space.
 static AUXIN_GENERATE_NUMBER: i32 = 100;
 
 /// The distance at which an auxin is "consumed" by a vein.
 static PROXIMITY_THRESHOLD: f32 = VEIN_RADIUS + AUXIN_RADIUS + 5.0;
-static SHOW_PROXIMITY_THRESHOLD: bool = false;
+static SHOW_PROXIMITY_THRESHOLD: bool = true;
 
 /// The maximum distance an auxin will attract a vein.
-static DIST_MAX: f32 = 75.0;
+static DIST_MAX: f32 = 200.0;
 
 
 type Point = Vec2;
@@ -50,17 +55,20 @@ async fn main() {
 
     srand(miniquad::date::now() as u64);
 
+    let leaf = Leaf::new(LEAF_SCALE);
     let mut veins: Vec<Vein> = Vec::new();
-    let mut auxins: Vec<Point> = generate_auxins(AUXIN_STARTING_NUMBER);
+    let mut auxins: Vec<Point> = generate_auxins(AUXIN_STARTING_NUMBER, &leaf);
 
-    // Initialize a root vein.
-    let root = Point { x: screen_width()/2.0, y: screen_height()/1.5 };
-    veins.push(Vein {position:root, direction:Point { x: 0.0, y: 0.0 }});
+    // Initialize a vein root at the base of the leaf.
+    veins.push(Vein {
+        position: leaf.get_stem_base(),
+        direction: Point::ZERO
+    });
 
     // Control variables
     let mut is_paused = true;
     let mut last_update = get_time();
-    let update_speed = 0.05;           // Step every 0.05 seconds (20 FPS)
+    let update_speed = 0.05;    // Step every 0.05 seconds (20 FPS)
 
 
     loop {
@@ -71,7 +79,7 @@ async fn main() {
         }
 
         if is_key_pressed(KeyCode::A) {
-            auxins.append(&mut generate_auxins(AUXIN_GENERATE_NUMBER));
+            auxins.append(&mut generate_auxins(AUXIN_GENERATE_NUMBER, &leaf));
         }
 
         let current_time = get_time();
@@ -82,6 +90,8 @@ async fn main() {
         }
 
         clear_background(WHITE);
+
+        leaf.draw_outline();
 
         draw(&auxins, &veins);
 
@@ -139,6 +149,7 @@ fn grow_veins_step(auxins: &Vec<Point>, veins: &mut Vec<Vein>){
 
             // Without a bit of noise, if a vein finds itself inbetween two auxins,
             // the resulting direction vector points to the middle, and gets "stuck".
+            // This whole problem can probably be solved with a poisson disk distribution of auxins mentioned in the paper.
             let growth_direction = vein.direction.normalize() + noise();
             let new_position = vein.position + (growth_direction * VEIN_GROWTH_RATE);
 
@@ -171,13 +182,20 @@ fn remove_auxins_in_proximity(auxins: &mut Vec<Point>, veins: &[Vein]) {
     });
 }
 
-fn generate_auxins(n: i32) -> Vec<Point> {
-    let mut auxins: Vec<Point> = Vec::new();
-    for _ in 0..n {
+fn generate_auxins(n: i32, leaf: &Leaf) -> Vec<Point> {
+
+    let mut auxins: Vec<Point> = Vec::with_capacity(n as usize);
+
+    while auxins.len() < n as usize {
         let x = rand::gen_range(0.0, screen_width());
         let y = rand::gen_range(0.0, screen_height());
-        auxins.push(Point {x, y});
+        let p = Point {x, y};
+
+        if leaf.contains(p) {
+            auxins.push(p);
+        }
     }
+
     auxins
 }
 
