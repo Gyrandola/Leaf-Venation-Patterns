@@ -13,13 +13,13 @@ static VEIN_GROWTH_RATE: f32 = 8.5;
 
 static AUXIN_RADIUS: f32 = 4.0;
 static AUXIN_COLOR: Color = RED;
-static AUXIN_STARTING_NUMBER: i32 = 1000;
+static AUXIN_STARTING_NUMBER: i32 = 500;
 
 /// Number of auxins to generate when pressing space.
 static AUXIN_GENERATE_NUMBER: i32 = 100;
 
 /// The distance at which an auxin is "consumed" by a vein.
-static PROXIMITY_THRESHOLD: f32 = VEIN_RADIUS + AUXIN_RADIUS + 5.0;
+static PROXIMITY_THRESHOLD: f32 = VEIN_RADIUS + AUXIN_RADIUS + 20.0;
 static SHOW_PROXIMITY_THRESHOLD: bool = true;
 
 /// The maximum distance an auxin will attract a vein.
