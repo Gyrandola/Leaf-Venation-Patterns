@@ -1,9 +1,12 @@
 # Venation Pattern Generator
 
+
+![Build Status](https://github.com/Gyrandola/Leaf-Venation-Patterns/actions/workflows/rust.yml/badge.svg)
 ![Rust](https://img.shields.io/badge/rust-v1.70%2B-orange?logo=rust&style=flat-square)
 ![Macroquad](https://img.shields.io/badge/made%20with-macroquad-blueviolet?style=flat-square)
 ![License](https://img.shields.io/github/license/Gyrandola/Leaf-Venation-Patterns?style=flat-square&color=blue)
 ![Repo Size](https://img.shields.io/github/repo-size/Gyrandola/Leaf-Venation-Patterns?style=flat-square)
+
 
 
 A procedural simulation of leaf vein growth based on the Space Colonization Algorithm, as described by Runions et al. in [Modeling and visualization of leaf venation patterns](https://algorithmicbotany.org/papers/venation.sig2005.pdf). <br>
