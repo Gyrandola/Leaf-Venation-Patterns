@@ -4,25 +4,34 @@ use leaf::Leaf;
 use macroquad::prelude::*;
 use macroquad::rand::srand;
 
+/// Size multiplier for the leaf.
 static LEAF_SCALE: f32 = 1000.0;
 
+/// Visual thickness of the vein nodes.
 static VEIN_RADIUS: f32 = 4.0;
+/// Primary color of the vein segment.
 static VEIN_INNER_COLOR: Color = WHITE;
+/// Outline color of the vein segment.
 static VEIN_OUTER_COLOR: Color = BLACK;
+/// Distance a vein travels per growth step.
 static VEIN_GROWTH_RATE: f32 = 8.5;
 
+/// Visual size of the attractor points.
 static AUXIN_RADIUS: f32 = 4.0;
+/// Color of the attractor points.
 static AUXIN_COLOR: Color = RED;
+/// Initial auxins density.
 static AUXIN_STARTING_NUMBER: i32 = 500;
 
-/// Number of auxins to generate when pressing space.
+/// Number of auxins to inject when pressing 'A'.
 static AUXIN_GENERATE_NUMBER: i32 = 100;
 
-/// The distance at which an auxin is "consumed" by a vein.
+/// Radius at which an auxin is "consumed" and removed by a vein.
 static PROXIMITY_THRESHOLD: f32 = VEIN_RADIUS + AUXIN_RADIUS + 20.0;
+/// Toggles the visual "kill zone" circle around auxins.
 static SHOW_PROXIMITY_THRESHOLD: bool = true;
 
-/// The maximum distance an auxin will attract a vein.
+/// Maximum distance an auxin can be from a vein to exert attraction.
 static DIST_MAX: f32 = 200.0;
 
 
@@ -149,7 +158,6 @@ fn grow_veins_step(auxins: &Vec<Point>, veins: &mut Vec<Vein>){
 
             // Without a bit of noise, if a vein finds itself inbetween two auxins,
             // the resulting direction vector points to the middle, and gets "stuck".
-            // This whole problem can probably be solved with a poisson disk distribution of auxins mentioned in the paper.
             let growth_direction = vein.direction.normalize() + noise();
             let new_position = vein.position + (growth_direction * VEIN_GROWTH_RATE);
 
